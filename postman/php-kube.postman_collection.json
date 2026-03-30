@@ -1,0 +1,331 @@
+{
+  "info": {
+    "_postman_id": "62c864d1-4a91-4f82-8033-4e7a018d6f8a",
+    "name": "php-kube",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "44691313",
+    "_collection_link": "https://go.postman.co/collection/44691313-62c864d1-4a91-4f82-8033-4e7a018d6f8a?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "API Tests",
+      "item": [
+        {
+          "name": "Inventory",
+          "item": [
+            {
+              "name": "GET All Items",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Get all items successful\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "    const response = pm.response.json();",
+                      "    pm.expect(response).to.be.an('object');",
+                      "    pm.expect(response).to.have.property('items');",
+                      "    pm.expect(response.items).to.be.an('array');",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is acceptable\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{API_BASE_URL}}/items",
+                  "host": [
+                    "{{API_BASE_URL}}"
+                  ],
+                  "path": [
+                    "items"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "POST Create Item",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "const itemName = `Postman inventory item ${Date.now()}`;",
+                      "pm.environment.set('INVENTORY_ITEM_NAME', itemName);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Create item successful\", function () {",
+                      "    pm.response.to.have.status(201);",
+                      "    const response = pm.response.json();",
+                      "    const expectedName = pm.environment.get('INVENTORY_ITEM_NAME');",
+                      "    pm.expect(response).to.be.an('object');",
+                      "    pm.expect(response).to.have.property('item');",
+                      "    pm.expect(response.item).to.be.an('object');",
+                      "    pm.expect(response.item).to.have.property('id');",
+                      "    pm.expect(response.item).to.have.property('name');",
+                      "    pm.expect(response.item.id).to.be.a('number');",
+                      "    pm.expect(response.item.id).to.be.above(0);",
+                      "    pm.expect(response.item.name).to.eql(expectedName);",
+                      "    pm.environment.set('LAST_CREATED_ITEM_ID', response.item.id);",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is acceptable\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"{{GATEWAY_ITEM_NAME}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{API_BASE_URL}}/items",
+                  "host": [
+                    "{{API_BASE_URL}}"
+                  ],
+                  "path": [
+                    "items"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "GET Health",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Health endpoint successful\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "    const response = pm.response.json();",
+                      "    pm.expect(response).to.be.an('object');",
+                      "    pm.expect(response).to.have.property('status');",
+                      "    pm.expect(response.status).to.eql('ok');",
+                      "});",
+                      "",
+                      "pm.test(\"Response time is acceptable\", function () {",
+                      "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://{{HOST}}:{{PORT}}/health",
+                  "protocol": "http",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "port": "{{PORT}}",
+                  "path": [
+                    "health"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Test Suites",
+          "item": [
+            {
+              "name": "Suite 1 - Health",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Health endpoint successful\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "    const response = pm.response.json();",
+                      "    pm.expect(response).to.be.an('object');",
+                      "    pm.expect(response).to.have.property('status');",
+                      "    pm.expect(response.status).to.eql('ok');",
+                      "});",
+                      "",
+                      "postman.setNextRequest('Suite 2 - Create Item');"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://{{HOST}}:{{PORT}}/health",
+                  "protocol": "http",
+                  "host": [
+                    "{{HOST}}"
+                  ],
+                  "port": "{{PORT}}",
+                  "path": [
+                    "health"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Suite 2 - Create Item",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "const itemName = `Postman suite item ${Date.now()}`;",
+                      "pm.environment.set('SUITE_ITEM_NAME', itemName);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Create item successful\", function () {",
+                      "    pm.response.to.have.status(201);",
+                      "    const response = pm.response.json();",
+                      "    const expectedName = pm.environment.get('SUITE_ITEM_NAME');",
+                      "    pm.expect(response).to.be.an('object');",
+                      "    pm.expect(response).to.have.property('item');",
+                      "    pm.expect(response.item).to.be.an('object');",
+                      "    pm.expect(response.item).to.have.property('id');",
+                      "    pm.expect(response.item).to.have.property('name');",
+                      "    pm.expect(response.item.name).to.eql(expectedName);",
+                      "    pm.environment.set('SUITE_ITEM_ID', response.item.id);",
+                      "});",
+                      "",
+                      "postman.setNextRequest('Suite 3 - Get Items And Verify');"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"{{SUITE_ITEM_NAME}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{API_BASE_URL}}/items",
+                  "host": [
+                    "{{API_BASE_URL}}"
+                  ],
+                  "path": [
+                    "items"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Suite 3 - Get Items And Verify",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Get items successful\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "    const response = pm.response.json();",
+                      "    const expectedName = pm.environment.get('SUITE_ITEM_NAME');",
+                      "    pm.expect(response).to.be.an('object');",
+                      "    pm.expect(response).to.have.property('items');",
+                      "    pm.expect(response.items).to.be.an('array');",
+                      "    const found = response.items.some((item) => item.name === expectedName);",
+                      "    pm.expect(found, `Expected to find item name: ${expectedName}`).to.eql(true);",
+                      "});",
+                      "",
+                      "postman.setNextRequest(null);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{API_BASE_URL}}/items",
+                  "host": [
+                    "{{API_BASE_URL}}"
+                  ],
+                  "path": [
+                    "items"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
