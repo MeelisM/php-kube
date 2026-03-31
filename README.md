@@ -14,6 +14,7 @@
 - [One-command happy path](#one-command-happy-path)
 - [Postman collections](#postman-collections)
 - [Manual kubeconfig setup](#manual-kubeconfig-setup)
+- [Extra thoughts](#extra-thoughts)
 
 ## What is implemented
 
@@ -117,21 +118,15 @@ Or directly:
 bash scripts/k3s-up.sh
 ```
 
-Access API locally:
+Access API locally (NodePort):
 
 ```bash
-make k8s-port-forward
-```
-
-Then test API:
-
-```bash
-curl http://localhost:8080/health
-curl http://localhost:8080/api/items
-curl -X POST http://localhost:8080/api/items \
+curl http://127.0.0.1:30080/health
+curl http://127.0.0.1:30080/api/items
+curl -X POST http://127.0.0.1:30080/api/items \
   -H "Content-Type: application/json" \
   -d '{"name":"Another random item"}'
-curl http://localhost:8080/api/items
+curl http://127.0.0.1:30080/api/items
 ```
 
 See workload status:
@@ -179,7 +174,7 @@ make k8s-logs-db # show database statefulset logs.
 
 ## Persistence check (PVC)
 
-1. Start app and DB with `make k8s-up` and `make k8s-port-forward`.
+1. Start app and DB with `make k8s-up`.
 2. Insert a record with `POST /api/items`.
 3. Run `make k8s-down`, then `make k8s-up` again.
 4. Call `GET /api/items` and verify the inserted record is still present.
@@ -187,8 +182,7 @@ make k8s-logs-db # show database statefulset logs.
 ## One-command happy path
 
 1. `make k8s-up`
-2. `make k8s-port-forward`
-3. Test `http://localhost:8080/health` and `http://localhost:8080/api/items`
+2. Test `http://127.0.0.1:30080/health` and `http://127.0.0.1:30080/api/items`
 
 ## Postman collections
 
@@ -220,3 +214,11 @@ sudo chown "$(id -u):$(id -g)" ~/.kube/k3s-config
 chmod 600 ~/.kube/k3s-config
 export KUBECONFIG="$HOME/.kube/k3s-config"
 ```
+
+## Extra thoughts
+
+- I assumed that, in the case of `k3s`, it is already installed on the host machine since the instructions did not mention the host OS. Automated k3s installation can be complicated in that case because operating systems require different SELinux policy versions.
+
+- I set up CPU-based horizontal scaling with the metrics server, but it required a lot of patching. This was either due to my local development environment or the host operating system (OpenSUSE Tumbleweed). Need to also disable firewall or open `port 10250`.
+
+- For local access I kept the app on a NodePort instead of wiring Ingress hostnames to avoid asking for `/etc/hosts` changes. In a real setup I’d keep the Service as `ClusterIP` and front it with Ingress/Gateway.

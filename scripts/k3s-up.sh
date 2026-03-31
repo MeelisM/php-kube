@@ -117,5 +117,5 @@ kubectl rollout status statefulset/db -n "${NAMESPACE}" --timeout=180s
 kubectl rollout status deployment/app -n "${NAMESPACE}" --timeout=180s
 
 echo "Kubernetes resources are ready in namespace ${NAMESPACE}."
-echo "Access API with: kubectl port-forward -n ${NAMESPACE} svc/app 8080:80"
+echo "Access API at: http://localhost:30080/health"
 echo "KUBECONFIG is set in this run to ${USER_K3S_CONFIG}"
