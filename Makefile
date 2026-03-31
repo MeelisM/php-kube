@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 NAMESPACE ?= php-kube
 
-.PHONY: dev down logs k8s-up k8s-down k8s-destroy k8s-port-forward k8s-status k8s-pods k8s-services k8s-logs-app k8s-logs-db
+.PHONY: dev down logs k8s-up k8s-down k8s-destroy k8s-status k8s-pods k8s-services k8s-logs-app k8s-logs-db
 
 dev:
 	docker compose up --build
@@ -20,9 +20,6 @@ k8s-down:
 
 k8s-destroy:
 	NAMESPACE=$(NAMESPACE) bash scripts/k3s-destroy.sh
-
-k8s-port-forward:
-	bash scripts/k3s-kubectl.sh port-forward -n $(NAMESPACE) svc/app 8080:80
 
 k8s-status:
 	bash scripts/k3s-kubectl.sh get all -n $(NAMESPACE)

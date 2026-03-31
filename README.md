@@ -226,6 +226,6 @@ export KUBECONFIG="$HOME/.kube/k3s-config"
 
 - I assumed that, in the case of `k3s`, it is already installed on the host machine since the instructions did not mention the host OS. Automated k3s installation can be complicated in that case because operating systems require different SELinux policy versions.
 
-- I set up CPU-based horizontal scaling with the metrics server, but it required a lot of patching. This was either due to my local development environment or the host operating system (OpenSUSE Tumbleweed). Need to also disable firewall or open `port 10250`.
+- I set up CPU-based horizontal scaling with the metrics server, but it required a lot of patching. This was either due to my local development environment or the host operating system (OpenSUSE Tumbleweed). Need to also disable firewall or open `port 10250`. In the end, I decided not to implement it.
 
 - For local access I kept the app on a NodePort instead of wiring Ingress hostnames to avoid asking for `/etc/hosts` changes. In a real setup I’d keep the Service as `ClusterIP` and front it with Ingress/Gateway.
