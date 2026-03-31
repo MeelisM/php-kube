@@ -150,10 +150,17 @@ Cleanup app layer only (keeps namespace, DB StatefulSet, PVC/data, and k3s insta
 make k8s-down
 ```
 
-Destroy all project resources (deletes namespace, including DB PVC/data; keeps k3s installed):
+Destroy all project resources (deletes namespace, including DB PVC/data):
 
 ```bash
 CONFIRM_DESTROY=yes make k8s-destroy
+```
+
+If namespace deletion gets stuck in `Terminating`, `k8s-destroy` times out and prints a manual finalizer command. That command forcibly clears namespace finalizers so Kubernetes can finish deletion. Use it only when normal deletion is stuck.
+
+```bash
+export KUBECONFIG="$HOME/.kube/k3s-config"
+kubectl get namespace php-kube -o json | jq 'del(.spec.finalizers[])' | kubectl replace --raw /api/v1/namespaces/php-kube/finalize -f -
 ```
 
 ## Useful commands
